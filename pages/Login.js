@@ -31,8 +31,9 @@ function LoginPage() {
         if (data.result) {
           //var realtorSuit = { "userName": email, "userType": userType };
           //localStorage.setItem("realtorSuit", JSON.stringify(realtorSuit));
-          window.location.href="/home"
+          //window.location.href="/home"
           //navigate("/home");
+          alert("Redirect to home page");
         }
       })
       .catch((e) => {

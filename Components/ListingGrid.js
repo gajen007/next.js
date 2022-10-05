@@ -12,13 +12,16 @@ function ListingGrid(props) { //props is an object as a parameter
     
     // show added text when page loads
     useEffect(()=>{
+/*        
         var favVal=JSON.parse(localStorage.getItem("favData"));
         if(favVal["fav"].includes(props.mlsnumber)){
             addFavMessage("Added");
         }
+*/
     },[]);
 
     const addToFavourite=()=>{
+/*        
         var favVal=JSON.parse(localStorage.getItem("favData"));
         if(favVal["fav"].includes(props.mlsnumber)){
             var index = favVal["fav"].indexOf(props.mlsnumber);
@@ -32,7 +35,7 @@ function ListingGrid(props) { //props is an object as a parameter
             addFavMessage("Added");
             localStorage.setItem("favData",JSON.stringify(favVal));
         }
-        
+*/
     }
     return (
         <div className="col">
@@ -67,7 +70,7 @@ function ListingGrid(props) { //props is an object as a parameter
                 <div className="card-footer">
                     <div className="row">
                         <div className="col-md-12 mt-1">
-                            <Link href={"/inquiry/" + props.mlsnumber}>
+                            <Link href={"/InquiryProperty?mlsNumber=" + props.mlsnumber}>
                                 <div className="shadow-sm btn btn-outline-primary form-control">
                                     <FontAwesomeIcon icon={faComment}></FontAwesomeIcon>&nbsp;
                                     Enquiry
@@ -77,7 +80,7 @@ function ListingGrid(props) { //props is an object as a parameter
                     </div>
                     <div className="row">
                         <div className="col-md-12 mt-1">
-                            <Link href={"/singleListing/" + props.mlsnumber}>
+                            <Link href={"/SingleListing?mlsNumber=" + props.mlsnumber}>
                                 <div className="shadow-sm btn btn-outline-success form-control">
                                     <FontAwesomeIcon icon={faMagnifyingGlassLocation}></FontAwesomeIcon>&nbsp;
                                     Show

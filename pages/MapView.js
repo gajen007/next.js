@@ -1,4 +1,4 @@
-import NavBar from "./NavBar";
+import NavBar from "../Components/NavBar";
 import ListingGrid from '../Components/ListingGrid.js';
 import Spinner from 'react-bootstrap/Spinner';
 import { useState, useEffect } from "react";

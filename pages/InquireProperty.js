@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
-import NavBar from "./NavBar";
+import NavBar from "../Components/NavBar";
 import ChatGrid from "../Components/ChatGrid";
-import { useNavigate } from 'react-router-dom';
-function InquiryProperty() {
+import { useRouter } from 'next/router'
 
-  const navigate = useNavigate();
-
-  const { mlsNumber } = useParams();
+export default function InquireProperty() {
+  const router = useRouter();
   const [typedText, placeChat] = useState("");
   const [chats, fillChats] = useState([]);
   const [fetchRequestState, setFetchRequestState]=useState(1);
@@ -19,7 +16,7 @@ function InquiryProperty() {
   var loggedInUserName="client@gmail.com";
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/inquiryChat?mlsNumber=" + mlsNumber + "&clientUserName="+loggedInUserName, {
+    fetch("http://localhost:8000/api/inquiryChat?mlsNumber=" + router.query.mlsNumber + "&clientUserName="+loggedInUserName, {
       method: 'GET',
       mode: 'cors',
       cache: 'no-cache'
@@ -37,7 +34,7 @@ function InquiryProperty() {
   const feedChat = (e) => {
     e.preventDefault();
     var toServer = new FormData();
-    toServer.append('mlsNumber', mlsNumber);
+    toServer.append('mlsNumber', router.query.mlsNumber);
     toServer.append('chatMessage', typedText);
     toServer.append('loggedInUserName', loggedInUserName);
     if (typedText !== null && typedText !== "") {
@@ -122,7 +119,6 @@ function InquiryProperty() {
     </>
   )
 }
-export default InquiryProperty;
 
     // //API response
     // //[

@@ -1,27 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import sampleMap from "../Images/map.png";
-import NavBar from "./NavBar";
-import { useNavigate } from 'react-router-dom';
-import MapV2 from "../Components/MapV2";
-import Spinner from 'react-bootstrap/Spinner';
+import Link from 'next/link';
+//import sampleMap from "../Images/map.png";
+import NavBar from "../Components/NavBar";
+//import MapV2 from "../Components/MapV2";
+//import Spinner from 'react-bootstrap/Spinner';
+import { useRouter } from 'next/router'
+import axios from "axios";
+
 function SingleListing() {
-  const navigate = useNavigate();
+  const router = useRouter();
   // localStorage.setItem("likes","");
-  const { mlsNumber } = useParams();
   const [jsonData, setJsonData] = useState({});
+  const fetchFunction = async () => {
+    try {
+      await axios
+        .get("http://localhost:8000/api/singleListing?mlsNumber=" + router.query.mlsNumber)
+        .then(res => {
+          setJsonData(res.data);
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/singleListing?mlsNumber=" + mlsNumber, { method: 'GET', mode: 'cors', cache: 'no-cache' })
-      .then(response => {
-        if (response.status === 200) { return response.json(); }
-        else { console.log('Backend Error..!'); console.log(response.text()); }
-      })
-      .then(data => {
-        setJsonData(data);
-      })
-      .catch(() => { console.log("Network connection error"); });
+    fetchFunction();
   }, []);
+
   return (
     <React.Fragment>
       <NavBar></NavBar>
@@ -33,7 +38,7 @@ function SingleListing() {
                 {"MLS Number : " + jsonData.mlsnumber}
               </div>
               <div className="col-md-4 mt-2">
-                <Link href="/home"><div className="btn btn-primary form-control">Home</div></Link>
+                <Link href="/"><div className="btn btn-primary form-control">Home</div></Link>
               </div>
             </div>
 
@@ -74,7 +79,7 @@ function SingleListing() {
                     <tbody>
                       <tr>
                         <th scope="row">Address</th>
-                        <td><a href={"https://www.google.com/maps/search/?api=1&query=" + jsonData.latitude + "%2C" + jsonData.longitude}>{jsonData.address}</a></td>
+                        <td>{jsonData.address}</td>
                       </tr>
                       <tr>
                         <th scope="row">Bedrooms</th>
@@ -91,15 +96,7 @@ function SingleListing() {
                     </tbody>
                   </table>
                   <div style={{ "overflow": "auto", "height": "40vh" }}>
-                    {
-                      (jsonData.latitude) ? <MapV2
-                        latitude={jsonData.latitude}
-                        longitude={jsonData.longitude}
-                        text={jsonData.address}
-                      ></MapV2>
-                        :
-                        <center><Spinner animation="grow" /></center>
-                    }
+
                   </div>
                   <div className="btn btn-warning form-control mt-2" >Request</div>
                   {/* <button onClick={
@@ -110,8 +107,8 @@ function SingleListing() {
                     } className="btn btn-danger form-control mt-2" >Add to Favourites</button> */
                   }
 
-                  <a className="btn btn-success form-control mt-2" href={"https://wa.me/?text=" + window.location.href}>Share</a>
-                  <Link to={"/inquiry/" + jsonData.mlsnumber}>
+                  <a className="btn btn-success form-control mt-2">Share</a>
+                  <Link href={"/InquiryProperty/" + jsonData.mlsnumber}>
                     <button className="btn btn-primary form-control mt-2" >Enquiry</button>
                   </Link>
 

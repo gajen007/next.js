@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import NavBar from "./NavBar";
+import NavBar from "../Components/NavBar";
 import { useNavigate } from 'react-router-dom';
 
 import L from 'leaflet/dist/leaflet';

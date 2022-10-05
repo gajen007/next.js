@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import Link from 'next/link';
 import L from 'leaflet/dist/leaflet';
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";

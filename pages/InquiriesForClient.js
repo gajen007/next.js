@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from "react";
-import NavBar from "./NavBar";
+import NavBar from "../Components/NavBar";
 import Link from 'next/link';
-function UserEnquiries() {
-    const [chats, fillChats] = useState([]);
+import axios from "axios";
+export default function InquiriesForClient() {
+    const [inquiries, fillInquiries] = useState([]);
     //let realtorSuit = JSON.parse(localStorage.getItem("realtorSuit"));
     //var loggedInUserName = realtorSuit['userName'];
-    var loggedInUserName = "realtor@gmail.com";
-    useEffect(() => {
-        fetch("http://localhost:8000/api/allInquiriesOfClient?loggedInUserName=" + loggedInUserName, {
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache'
-        })
-            .then(res => { return res.json(); })
-            .then(data => {
-                if (data.length > 0) {
-                    fillChats(data);
-                }
+    var loggedInUserName = "client@gmail.com";
+    
+    const fetchFunction = async () => {
+        try {
+          await axios
+            .get("http://localhost:8000/api/allInquiriesOfClient?loggedInUserName=" + loggedInUserName)
+            .then(res => {
+                fillInquiries(res.data);
+            });
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      useEffect(() => {
+        fetchFunction();
+      }, []);
 
-            }).catch(err => console.error(err));
-
-    }, []);
     return (
         <React.Fragment>
             <NavBar></NavBar>
@@ -29,10 +31,10 @@ function UserEnquiries() {
                 <div className="row">
                     <div className="col-md-12">
                         {
-                            chats.map((item) => {
+                            inquiries.map((item) => {
                                 return (
-                                    <React.Fragment>
-                                        <div className="card my-2" key={item.mlsnumber}>
+                                    <React.Fragment key={item.mlsnumber}>
+                                        <div className="card my-2">
                                             <div className="card-header">
                                                 {item.mlsnumber}
                                             </div>
@@ -47,7 +49,7 @@ function UserEnquiries() {
                                                 </div>
                                             </div>
                                             <div className="card-footer">
-                                                <Link to={"/inquiry/"+item.mlsnumber}>
+                                                <Link href={"/InquireProperty?mlsNumber="+item.mlsnumber}>
                                                     <div className="btn btn-primary form-control">
                                                         Continue Chat
                                                     </div>
@@ -64,4 +66,3 @@ function UserEnquiries() {
         </React.Fragment>
     );
 }
-export default UserEnquiries;
