@@ -8,15 +8,30 @@ import Link from 'next/link';
 export default function ClientHome() {
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(false);
-  
     const fetchFunction = async () => {
       try {
-        await axios
-          .get('http://localhost:8000/api/allListings')
-          .then(res => {
-            setListings(res.data['listings']);
-          });
-        setLoading(true);
+await axios({
+  url: 'http://localhost:8081/graphql',
+  method: 'POST',
+  data: {
+    //inner "query" is IMPORTANT
+    query: `query {
+      getAllListings {
+        mlsnumber
+        price
+        address
+        latitude
+        longitude
+        bedrooms
+        washrooms
+        }
+      }
+      `
+  }
+}).then((result) => {
+  setListings(result.data.data.getAllListings);
+});
+       setLoading(true);
       } catch (e) {
         console.log(e);
       }
