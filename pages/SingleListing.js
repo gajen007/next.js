@@ -120,7 +120,7 @@ function SingleListing() {
     }
     
     <a className="btn btn-success form-control mt-2">Share</a>
-    <Link href={"/InquiryProperty/" + jsonData.mlsnumber}>
+    <Link href={"/InquireProperty?mlsNumber=" + jsonData.mlsnumber}>
     <button className="btn btn-primary form-control mt-2" >Enquiry</button>
     </Link>
     

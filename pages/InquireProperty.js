@@ -10,6 +10,7 @@ export default function InquireProperty() {
   const router = useRouter();
   const [typedText, placeChat] = useState("");
   const [chats, fillChats] = useState([]);
+  const [receiverID,setReceiverID] = useState("");
   const [fetchRequestState, setFetchRequestState]=useState(1);
 
   //let realtorSuit = JSON.parse(localStorage.getItem("realtorSuit"));
@@ -22,9 +23,10 @@ export default function InquireProperty() {
       url: 'http://localhost:8081/graphql',
       method: 'POST',
       data: {
-        //inner "query" is IMPORTANT
+        //inner "query" is IMPORTANT because this is similar with GET
         query: `query {
           getSingleInquiryOfUserAndMLSnumber(userID:"`+loggedInUserID+`",mlsNo:"`+router.query.mlsNumber+`") {
+            _id
             senderID
             receiverID
             chatMessage
@@ -36,48 +38,43 @@ export default function InquireProperty() {
     }).then((result) => {
       if(result.data.data.getSingleInquiryOfUserAndMLSnumber.length>0){
         fillChats(result.data.data.getSingleInquiryOfUserAndMLSnumber);
+        result.data.data.getSingleInquiryOfUserAndMLSnumber.forEach(function(ele){
+          if (ele.senderID==loggedInUserID) {
+            setReceiverID(ele.receiverID);
+          }
+        })
       }
     });
   };
 
-  useEffect(() => { fetchFunction(); }, []);
+  useEffect(() => { fetchFunction(); }, [fetchRequestState]);
 
   const feedChat = (e) => {
     e.preventDefault();
-    var toServer = new FormData();
-    toServer.append('mlsNumber', router.query.mlsNumber);
-    toServer.append('chatMessage', typedText);
-    toServer.append('loggedInUserName', loggedInUserName);
     if (typedText !== null && typedText !== "") {
-      fetch("http://localhost:8000/api/feedInquiryChatByClient", {
-        method: 'POST',
-        body: toServer,
-        mode: 'cors',
-        cache: 'no-cache'
-      }).then(async response => {
-        try {
-          const data = await response.json()
-          console.log('response data', data);
-          return data;
-        } catch (error) {
-          console.log('Error happened here!')
-          console.error(error)
-        }
-      })
-        .then(data => {
-          //How to empty a "state value" after render
-          if (!data.result) {
-            alert(data.message);
-          } else {
+          axios({
+            url: 'http://localhost:8081/graphql',
+            method: 'POST',
+            data: {
+              query: `mutation {
+                feedInquiryChatByClient(chatMessage:"`+typedText+`",senderID:"`+loggedInUserID+`",receiverID:"`+receiverID+`",
+                mlsNo:"`+router.query.mlsNumber+`") {
+                  _id
+                  senderID
+                  receiverID
+                  chatMessage
+                  created_at
+                  }
+                }
+                `
+            }
+          }).then((result) => {
             placeChat("");
             document.getElementById("chatBox").value = "";
             setFetchRequestState(fetchRequestState+1);
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-          alert("Reloading");
-        });
+          }).catch((ex)=>{
+            console.log(ex);
+          });
     }
     else {
       alert("Type something...");
@@ -86,7 +83,6 @@ export default function InquireProperty() {
 
   return (
     <>
-
       <NavBar></NavBar>
       <div className="container mt-5">
         <div className="row">
@@ -96,7 +92,7 @@ export default function InquireProperty() {
                 chats.map((item) => {
                   return (
                     <ChatGrid
-                      key={item.id}
+                      key={item._id}
                       chatMessage={item.chatMessage}
                       sentTime={item.created_at}
                       senderID={item.senderID}
@@ -130,24 +126,3 @@ export default function InquireProperty() {
     </>
   )
 }
-
-    // //API response
-    // //[
-    //     {
-    //     "id":1,
-    //     "mlsNumber":"W5715268",
-    //     "senderID":2,
-    //     "receiverID":1,
-    //     "chatMessage":"Hi, How old this Property is?",
-    //     "created_at":"2022-08-27T14:04:13.000000Z",
-    //     "updated_at":"2022-08-27T14:04:13.000000Z"
-    //     },
-    //     {"id":2,
-    //     "mlsNumber":"W5715268",
-    //     "senderID":1,
-    //     "receiverID":2,
-    //     "chatMessage":"10 years. Wanna buy this property..?",
-    //     "created_at":"2022-08-27T14:05:55.000000Z",
-    //     "updated_at":"2022-08-27T14:05:55.000000Z"
-    //     }
-    // ]
