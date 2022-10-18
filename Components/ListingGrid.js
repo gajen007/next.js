@@ -70,7 +70,7 @@ function ListingGrid(props) { //props is an object as a parameter
                 <div className="card-footer">
                     <div className="row">
                         <div className="col-md-12 mt-1">
-                            <Link href={"/InquiryProperty?mlsNumber=" + props.mlsnumber}>
+                            <Link href={"/InquireProperty?mlsNumber=" + props.mlsnumber}>
                                 <div className="shadow-sm btn btn-outline-primary form-control">
                                     <FontAwesomeIcon icon={faComment}></FontAwesomeIcon>&nbsp;
                                     Enquiry

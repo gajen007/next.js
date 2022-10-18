@@ -4,6 +4,7 @@ import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import NavBar from "../Components/NavBar";
 import ChatGrid from "../Components/ChatGrid";
 import { useRouter } from 'next/router'
+import axios from "axios";
 
 export default function InquireProperty() {
   const router = useRouter();
@@ -14,22 +15,32 @@ export default function InquireProperty() {
   //let realtorSuit = JSON.parse(localStorage.getItem("realtorSuit"));
   //var loggedInUserName=realtorSuit['userName'];
   var loggedInUserName="client@gmail.com";
+  var loggedInUserID="2";
+  
+  const fetchFunction = async()=>{
+    await axios({
+      url: 'http://localhost:8081/graphql',
+      method: 'POST',
+      data: {
+        //inner "query" is IMPORTANT
+        query: `query {
+          getSingleInquiryOfUserAndMLSnumber(userID:"`+loggedInUserID+`",mlsNo:"`+router.query.mlsNumber+`") {
+            senderID
+            receiverID
+            chatMessage
+            created_at
+            }
+          }
+          `
+      }
+    }).then((result) => {
+      if(result.data.data.getSingleInquiryOfUserAndMLSnumber.length>0){
+        fillChats(result.data.data.getSingleInquiryOfUserAndMLSnumber);
+      }
+    });
+  };
 
-  useEffect(() => {
-    fetch("http://localhost:8000/api/inquiryChat?mlsNumber=" + router.query.mlsNumber + "&clientUserName="+loggedInUserName, {
-      method: 'GET',
-      mode: 'cors',
-      cache: 'no-cache'
-    })
-      .then(res => { return res.json(); })
-      .then(data => {
-        if (data.length > 0) {
-          fillChats(data);
-        }
-
-      }).catch(err => console.error(err));
-
-  }, [fetchRequestState]);
+  useEffect(() => { fetchFunction(); }, []);
 
   const feedChat = (e) => {
     e.preventDefault();
